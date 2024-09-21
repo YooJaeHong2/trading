@@ -1,4 +1,4 @@
 dash==2.6.0
 pandas
-flask
+Flask==2.1.0
 gunicorn
