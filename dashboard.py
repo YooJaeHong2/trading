@@ -21,15 +21,37 @@
 
 # if __name__ == '__main__':
 #     app.run_server(debug=True)  # 서버 실행
-
+###############################################################################################
 
 import dash
 from dash import html
 import pandas as pd
 
 # Pandas DataFrame 로드
-df = pd.read_csv('https://gist.githubusercontent.com/chriddyp/c78bf172206ce24f77d6363a2d754b59/raw/c353e8ef842413cae56ae3920b8fd78468aa4cb2/usa-agricultural-exports-2011.csv')
+# df = pd.read_csv('https://gist.githubusercontent.com/chriddyp/c78bf172206ce24f77d6363a2d754b59/raw/c353e8ef842413cae56ae3920b8fd78468aa4cb2/usa-agricultural-exports-2011.csv')
 
+from google.cloud import bigquery
+from google.cloud.exceptions import NotFound
+from google.oauth2.service_account import Credentials
+
+# 서비스 계정 인증, BigQuery 클라이언트 객체 생성
+JSON_PATH = './newbuja-f7fa9b0d18c9.json'
+credentials = Credentials.from_service_account_file(JSON_PATH)
+client = bigquery.Client(credentials = credentials,
+                         project = credentials.project_id)
+
+sql = f"""
+SELECT
+    *
+  FROM
+    `newbuja.finance.market_cap`;
+"""
+
+# 데이터 조회 쿼리 실행 결과
+query_job = client.query(sql)
+
+# 데이터프레임 변환
+df = query_job.to_dataframe()
 
 # HTML 테이블 요소 파싱
 def generate_table(dataframe, max_rows=10):
@@ -51,7 +73,7 @@ server = app.server
 
 # 레이아웃 생성
 app.layout = html.Div([
-    html.H4(children='US Agriculture Exports (2011)'),
+    html.H4(children='World Market Cap Top10 List'),
     generate_table(df)
 ])
 
