@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "newbuja",
+  "private_key_id": "f7fa9b0d18c97da28134f5e6c1e04530d35fabb9",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQClmC8YMb8E+QAb\nHzykyN76rGpDFU7EL5LiexrkuQrfZmEc4dYNWgz95UaWMg816gbIjatqkXix7Z2d\nmVJ+mDAcwN5ktpfCfM1qTCMrnYqjYpF4y2FMqlLgIKq5k7BXaPUKwflnJxaORkhb\nlO6IAPA8qc61UCh3EzI3mnC7tg+GU+PTnp/C/kKzQ3PzmkJhK2m5NwSQ6AjoxPuE\nkp1l3gFEWvzV6q9CJqwtVKZ85hJzxcees0dugSjz4QoThwWjzECdV2ZVawFLAdyo\nb/XEBoz2cnAsQugmx4RN3yVwlTkSwLqrrIZ8DjfldZcg8TOBPznEr63XL6wg7pJv\nrF+1wMJFAgMBAAECggEABSQAzkT5E5vxQ2ZIWSs9NNX2ZIe8Tr3VVv+QWape6omA\nmUdvgDGb9qPP+airLTbLKB2xxRioAQoJ2xMf6vspfzMDlGfQtUJvlA2yB9AXtjPA\npVnW9uzQrtGEy0cI8eW5ubBE4E1n11naNDGe6AzzaEazOpC2+N9ZLz21ozYnLDnQ\nryDGimhoe4ryEwUwppTmeIo5b6Wre2b4VkrZcRzpoSxrVVltXQuI4hgWzytdI0YR\nUzHuf+Ts4xFNoo7c16v1Cl+M2+1NiylgbgH7NmPxUpI4MkrWhoernVGiMA19f46V\nSd678PcFcPvCzz8LIXg851YcCzbQ5cIn2xcqGD/JIQKBgQDRyGFJ3zheZkvf5N1n\n9z2iExSAUe8/QnhF5SOD2P5SYg8UwijGVIZjLH4sHXvUBK2OtpeAumjYCsVD2H82\nfekl+I4rKctRfw1QLCKwLi8P15l/HUAGM07eBhJmbsbUFqvlhMuPygdpG0uU2Mpu\nQlZ1ESJAKM6jrU8fFkdYGCuxkQKBgQDKE5zBg4UaefXNUHNIy4DOEuPLKsNLPq9k\nfiDuJNTEtFzUafsSlM2n3MqJUFtLYIkUMb/VUlW/lBY2XLCvTw796bqrKVale6+l\nSdr9sJ+4MhgTB/Xh14MzdmNtEZNPppHtMPE4KiKw13n/4+JFlxG95bGelo1PmU1V\nHoEA5QFrdQKBgFLNkPkjjpBUOGarY2kCAeXTOihcLt79UZPlGduU7u19nw5GhOmj\nu1ex3Ct1h8bsAcVu9OXurit4NNzOu4e6syg1r4gB+yqzx4F5qkd4M0NBimjOFtNb\ntSmVo/WijABy4m65t8+Notct2utplp1mudGDbc19TfL1GWHf3VE8WSLBAoGACQy9\nzXDNajUiC/LZZt4uQ4xXBUdB/cGt6ys24FNn7/M/4QdqBhgB6c2aiHG/1O1a1juw\nIqaQToccQ4z9IKzCuB5ajMXKKpkSca2QECJz1LTxnRCTM20KZCieJUlPNpb4HA5A\nD0rbyN2tigczn/g3BDEgNkD5zSHJc9Fs55RZ7u0CgYEA0F46YbEFspk2rS0ckJBf\nifXdo+NgME0GjC6xpk5F5pRRfoqpPbtzJJyEEOI7oE0jeynYcmqDpp60gKYjDr4X\nY/g5JADyFsv/nSKOYZojvreLfzJmD3yhswnlTUeYW/ilcifQLgH9uCExtrQlYPB9\n/l7z1S8h0eAOKTFLt/pvbtM=\n-----END PRIVATE KEY-----\n",
+  "client_email": "trading@newbuja.iam.gserviceaccount.com",
+  "client_id": "106039868237087319452",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/trading%40newbuja.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
