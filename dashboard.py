@@ -21,6 +21,16 @@ def generate_table(dataframe, max_rows=10):
 
 
 # Dash 앱 인스턴스 생성
+# In place of something like this
+@app.before_first_request
+def create_tables():
+    db.create_all()
+    ...
+
+# push context manually to app
+with app.app_context():
+    db.create_all()
+    
 app = dash.Dash(__name__)
 server = app.server
 
