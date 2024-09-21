@@ -22,6 +22,7 @@ def generate_table(dataframe, max_rows=10):
 
 # Dash 앱 인스턴스 생성
 app = dash.Dash(__name__)
+server = app.server
 
 # 레이아웃 생성
 app.layout = html.Div([
