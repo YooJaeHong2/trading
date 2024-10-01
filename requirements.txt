@@ -3,4 +3,5 @@ pandas
 Flask==2.1.0
 Werkzeug==2.2.2
 google-cloud-bigquery
+db-dtypes
 gunicorn
