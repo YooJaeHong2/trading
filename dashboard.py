@@ -1,6 +1,7 @@
 import dash
 from dash import html
 import pandas as pd
+import os
 
 # Pandas DataFrame 로드
 # df = pd.read_csv('https://gist.githubusercontent.com/chriddyp/c78bf172206ce24f77d6363a2d754b59/raw/c353e8ef842413cae56ae3920b8fd78468aa4cb2/usa-agricultural-exports-2011.csv')
@@ -10,7 +11,7 @@ from google.cloud.exceptions import NotFound
 from google.oauth2.service_account import Credentials
 
 # 서비스 계정 인증, BigQuery 클라이언트 객체 생성
-JSON_PATH = ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+JSON_PATH = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 credentials = Credentials.from_service_account_file(JSON_PATH)
 client = bigquery.Client(credentials = credentials,
                          project = credentials.project_id)
