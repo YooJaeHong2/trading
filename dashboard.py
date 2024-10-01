@@ -1,7 +1,7 @@
 import dash
 from dash import html
 import pandas as pd
-import os
+# import os
 
 # Pandas DataFrame 로드
 # df = pd.read_csv('https://gist.githubusercontent.com/chriddyp/c78bf172206ce24f77d6363a2d754b59/raw/c353e8ef842413cae56ae3920b8fd78468aa4cb2/usa-agricultural-exports-2011.csv')
@@ -9,9 +9,14 @@ import os
 from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
 from google.oauth2.service_account import Credentials
+import json
+
+# secret_file.json 파일의 경로를 사용하여 서비스 계정 키 파일 로드
+with open('secret_file.json', 'r') as file:
+    # JSON 데이터를 로드하는 것이 아니라 파일 경로를 제공해야 합니다.
+    JSON_PATH = 'secret_file.json'  # 파일 경로로 설정
 
 # 서비스 계정 인증, BigQuery 클라이언트 객체 생성
-JSON_PATH = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
 credentials = Credentials.from_service_account_file(JSON_PATH)
 client = bigquery.Client(credentials = credentials,
                          project = credentials.project_id)
