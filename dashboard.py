@@ -11,7 +11,7 @@ from google.cloud.exceptions import NotFound
 from google.oauth2.service_account import Credentials
 
 # 서비스 계정 인증, BigQuery 클라이언트 객체 생성
-JSON_PATH = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+JSON_PATH = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
 credentials = Credentials.from_service_account_file(JSON_PATH)
 client = bigquery.Client(credentials = credentials,
                          project = credentials.project_id)
