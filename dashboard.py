@@ -1,28 +1,3 @@
-# import dash
-# import dash_core_components as dcc
-# import dash_html_components as html
-# from dash.dependencies import Input, Output
-
-# # Dash 애플리케이션 초기화
-# app = dash.Dash(__name__)
-# server = app.server
-
-# # 애플리케이션 레이아웃 설정
-# app.layout = html.Div([
-#     dcc.Input(id='my-input', value='초기값', type='text'),
-#     html.Div(id='my-output') ])
-
-# # 콜백 정의
-# @app.callback(
-#     Output(component_id='my-output', component_property='children'),
-#     [Input(component_id='my-input', component_property='value')])
-# def update_output_div(input_value):
-#     return f'입력된 값: {input_value}'
-
-# if __name__ == '__main__':
-#     app.run_server(debug=True)  # 서버 실행
-###############################################################################################
-
 import dash
 from dash import html
 import pandas as pd
@@ -35,7 +10,7 @@ from google.cloud.exceptions import NotFound
 from google.oauth2.service_account import Credentials
 
 # 서비스 계정 인증, BigQuery 클라이언트 객체 생성
-JSON_PATH = './newbuja-f7fa9b0d18c9.json'
+JSON_PATH = ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 credentials = Credentials.from_service_account_file(JSON_PATH)
 client = bigquery.Client(credentials = credentials,
                          project = credentials.project_id)
