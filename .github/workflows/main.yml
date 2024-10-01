@@ -1,6 +1,19 @@
-- name: create-json
-      id: create-json
-      uses: jsdaniell/create-json@1.1.2
-      with:
-        name: "secrets.json"
-        json: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+name: Create JSON file from secret
+
+on: [push]
+
+jobs:
+  create_json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create JSON file
+        run: |
+          echo "{\"secret_key\": \"${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}\"}" > secret_file.json
+
+      - name: Verify JSON file
+        run: |
+          cat secret_file.json
+
