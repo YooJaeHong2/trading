@@ -1,26 +1,26 @@
-import dash
-from dash import html
-import pandas as pd
-# import os
-
-# Pandas DataFrame 로드
-# df = pd.read_csv('https://gist.githubusercontent.com/chriddyp/c78bf172206ce24f77d6363a2d754b59/raw/c353e8ef842413cae56ae3920b8fd78468aa4cb2/usa-agricultural-exports-2011.csv')
-
 from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
 from google.oauth2.service_account import Credentials
+import dash
+from dash import html
+import pandas as pd
+import os
 import json
 
-# secret_file.json 파일의 경로를 사용하여 서비스 계정 키 파일 로드
-with open('secret_file.json', 'r') as file:
-    # JSON 데이터를 로드하는 것이 아니라 파일 경로를 제공해야 합니다.
-    JSON_PATH = json.load(file)  # 파일 경로로 설정
+# 환경 변수에서 서비스 계정 JSON 키를 읽어옴
+service_account_info = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 
-# 서비스 계정 인증, BigQuery 클라이언트 객체 생성
-credentials = Credentials.from_service_account_file(JSON_PATH)
-client = bigquery.Client(credentials = credentials,
-                         project = credentials.project_id)
+# 문자열로 저장된 JSON 데이터를 다시 딕셔너리로 변환
+if service_account_info:
+    service_account_info = json.loads(service_account_info)
+    credentials = Credentials.from_service_account_info(service_account_info)
 
+    # BigQuery 클라이언트 생성
+    client = bigquery.Client(credentials=credentials, project=credentials.project_id)
+else:
+    raise Exception("Google Cloud 자격 증명을 찾을 수 없습니다.")
+
+# data table 가져오기
 sql = f"""
 SELECT
     *
