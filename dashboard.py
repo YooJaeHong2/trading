@@ -14,7 +14,7 @@ import json
 # secret_file.json 파일의 경로를 사용하여 서비스 계정 키 파일 로드
 with open('secret_file.json', 'r') as file:
     # JSON 데이터를 로드하는 것이 아니라 파일 경로를 제공해야 합니다.
-    JSON_PATH = 'secret_file.json'  # 파일 경로로 설정
+    JSON_PATH = json.load(file)  # 파일 경로로 설정
 
 # 서비스 계정 인증, BigQuery 클라이언트 객체 생성
 credentials = Credentials.from_service_account_file(JSON_PATH)
