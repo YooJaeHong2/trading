@@ -1,6 +1,5 @@
 dash==2.6.0
 pandas
-os
 Flask==2.1.0
 Werkzeug==2.2.2
 google-cloud-bigquery
