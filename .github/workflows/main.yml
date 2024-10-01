@@ -1,6 +1,6 @@
-- name: create-json
-      id: create-json
-      uses: jsdaniell/create-json@1.1.2
-      with:
-        name: "secrets.json"
-        json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+- name: Create JSON File
+  id: create-json
+  uses: jsdaniell/create-json@1.1.2
+  with:
+    name: "secrets.json"
+    json: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
