@@ -20,44 +20,309 @@ if service_account_info:
 else:
     raise Exception("Google Cloud 자격 증명을 찾을 수 없습니다.")
 
-# data table 가져오기
-sql = f"""
+# market cap 가져오기
+sql1 = f"""
 SELECT
     *
   FROM
     `newbuja.finance.market_cap`;
 """
-
-# 데이터 조회 쿼리 실행 결과
-query_job = client.query(sql)
+# nasdaq 가져오기
+sql2 = f"""
+SELECT
+    *
+  FROM
+    `newbuja.finance.nasdaq`;
+"""
+# stock 가져오기
+sql3 = f"""
+SELECT
+    *
+  FROM
+    `newbuja.finance.stock`;
+"""
 
 # 데이터프레임 변환
-df = query_job.to_dataframe()
+market_cap_data = client.query(sql1).to_dataframe()
+nasdaq_data = client.query(sql2).to_dataframe()
+stock_data = client.query(sql3).to_dataframe()
 
-# HTML 테이블 요소 파싱
-def generate_table(dataframe, max_rows=10):
-    return html.Table([
-        html.Thead(
-            html.Tr([html.Th(col) for col in dataframe.columns])
-        ),
-        html.Tbody([
-            html.Tr([
-                html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-            ]) for i in range(min(len(dataframe), max_rows))
-        ])
-    ])
+# 날짜 형식 변환
+nasdaq_data['Date'] = pd.to_datetime(nasdaq_data['Date'])
+stock_data['Date'] = pd.to_datetime(stock_data['Date'])
 
+# 날짜순 정렬
+nasdaq_data = nasdaq_data.sort_values(by='Date', ascending=True)
+stock_data = stock_data.sort_values(by='Date', ascending=True)
 
-# Dash 앱 인스턴스 생성
+# Ticker 리스트를 Cap Rank 기준으로 정렬
+sorted_tickers = market_cap_data.sort_values(by='Cap Rank')['Ticker'].unique()
+
+# Dash 애플리케이션 생성
 app = dash.Dash(__name__)
 server = app.server
 
-# 레이아웃 생성
+# 레이아웃 구성
 app.layout = html.Div([
-    html.H4(children='World Market Cap Top10 List'),
-    generate_table(df)
+
+    # 상단 구역
+    html.Div([
+        html.H1("American Dream !"),
+        html.H2("시가총액 상위 10위 Daily Status"),
+        dash_table.DataTable(
+            id='market-cap-table',
+            columns=[{'name': col, 'id': col} for col in market_cap_data.columns[1:]],  # 두 번째 컬럼부터
+            data=market_cap_data.iloc[:, 1:].head(10).to_dict('records'),  # 두 번째 컬럼부터
+            style_table={'overflowX': 'auto'},
+            style_cell={'textAlign': 'center'},
+            page_size=10  # 최대 10개 행 표시
+        )
+    ], style={'border': '3px solid #ddd', 'padding': '20px', 'margin-bottom': '10px'}),  # 상단 구획 나눔
+
+    # 중단 구역
+    html.Div([
+        html.Div([
+            html.H2("NASDAQ Chart", style={'margin-bottom': '10px'}),
+            dcc.Graph(id='nasdaq-candle-chart', style={'height': '600px'}),  # 차트 높이 증가
+        ], style={'width': '50%', 'display': 'inline-block', 'verticalAlign': 'top'}),
+        html.Div([
+            html.H2("Top10 Chart", style={'margin-bottom': '10px'}),
+            dcc.Dropdown(
+                id='ticker-dropdown',
+                options=[{'label': ticker, 'value': ticker} for ticker in sorted_tickers],
+                value=sorted_tickers[0],  # 기본값으로 Cap Rank가 가장 높은 티커 선택
+                clearable=False
+            ),
+            dcc.Graph(id='candle-chart', style={'height': '600px'})  # 차트 높이 증가
+        ], style={'width': '50%', 'display': 'inline-block', 'verticalAlign': 'top'}),
+    ], style={'border': '3px solid #ddd', 'padding': '20px', 'margin-bottom': '10px'}),  # 중단 구획 나눔
+    
+    # 하단 구역
+    html.Div([
+        html.Div([
+            html.H2("NASDAQ 최근 30일 Status"),
+            dash_table.DataTable(
+                id='nasdaq-recent-table',
+                columns=[
+                    {'name': 'Date', 'id': 'Date'},
+                    {'name': 'High', 'id': 'High'},
+                    {'name': 'Low', 'id': 'Low'},
+                    {'name': 'Close', 'id': 'Close'},
+                    {'name': 'Close Change (%)', 'id': 'Close Change (%)'}
+                ],
+                style_table={'overflowX': 'auto'},
+                style_cell={'textAlign': 'center'},
+                page_size=30  # 최대 30개 행 표시
+            )
+        ], style={'width': '45%', 'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '5%'}),
+        html.Div([
+            html.H2("Top10 최근 30일 Status"),
+            dash_table.DataTable(
+                id='stock-recent-table',
+                columns=[
+                    {'name': 'Date', 'id': 'Date'},
+                    {'name': 'High', 'id': 'High'},
+                    {'name': 'Low', 'id': 'Low'},
+                    {'name': 'Close', 'id': 'Close'},
+                    {'name': 'Close Change (%)', 'id': 'Close Change (%)'}
+                ],
+                style_table={'overflowX': 'auto'},
+                style_cell={'textAlign': 'center'},
+                page_size=30  # 최대 30개 행 표시
+            )
+        ], style={'width': '45%', 'display': 'inline-block', 'verticalAlign': 'top'}),
+
+    ], style={'border': '3px solid #ddd', 'padding': '10px'}),  # 하단 구획 나눔
+    dcc.Interval(
+        id='interval-component',
+        interval=3600*1000,  # 1시간 마다 호출 (필요에 따라 조정 가능)
+        n_intervals=0  # 페이지 로드 시 한 번 실행
+    )
 ])
 
+# 콜백 설정: 나스닥 캔들차트와 테이블 업데이트
+@app.callback(
+    [Output('nasdaq-candle-chart', 'figure'),
+     Output('nasdaq-recent-table', 'data')],
+    [Input('interval-component', 'n_intervals')]
+)
+
+def update_nasdaq_chart_and_table(selected_ticker):
+    df = nasdaq_data.copy()
+
+    # 전날 대비 종가 변동률 계산
+    df['Previous Close'] = df['Close'].shift(1)
+    df['Close Change (%)'] = ((df['Close'] - df['Previous Close']) / df['Previous Close'] * 100).round(2)
+
+    # NaN 값을 0으로 처리하여 초기 데이터 표시 문제 해결
+    df.fillna(0, inplace=True)
+
+    # 최근 30영업일 데이터 추출 및 최신 날짜가 위로 오도록 정렬
+    recent_30_days = df.tail(30).sort_values(by='Date', ascending=False)
+    recent_30_days['Date'] = recent_30_days['Date'].dt.strftime('%Y-%m-%d')  # 날짜 형식 변경
+
+    # 사용하지 않는 컬럼 제거 및 소수점 2자리까지 반올림
+    recent_30_days = recent_30_days[['Date', 'High', 'Low', 'Close', 'Close Change (%)']]
+    recent_30_days['High'] = recent_30_days['High'].round(2)
+    recent_30_days['Low'] = recent_30_days['Low'].round(2)
+    recent_30_days['Close'] = recent_30_days['Close'].round(2)
+
+    # 상승일과 하락일 분리
+    increasing_days = df[df['Close'] >= df['Previous Close']]
+    decreasing_days = df[df['Close'] < df['Previous Close']]
+
+    fig = go.Figure()
+
+    # 상승일 캔들차트 추가 (빨간색)
+    fig.add_trace(go.Candlestick(
+        x=increasing_days['Date'],
+        open=increasing_days['Open'],
+        high=increasing_days['High'],
+        low=increasing_days['Low'],
+        close=increasing_days['Close'],
+        increasing_line_color='red',
+        increasing_fillcolor='red',
+        hoverinfo='text',
+        text=[f'Date: {d.strftime("%Y/%m/%d")}<br>'
+              f'Open: {o:.1f}<br>'
+              f'High: {h:.1f}<br>'
+              f'Low: {l:.1f}<br>'
+              f'Close: {c:.1f} ({cc:+.2f}%)'
+              for d, o, h, l, c, cc in zip(
+                  increasing_days['Date'], increasing_days['Open'], increasing_days['High'],
+                  increasing_days['Low'], increasing_days['Close'], increasing_days['Close Change (%)']
+              )]
+    ))
+
+    # 하락일 캔들차트 추가 (밝은 파란색)
+    fig.add_trace(go.Candlestick(
+        x=decreasing_days['Date'],
+        open=decreasing_days['Open'],
+        high=decreasing_days['High'],
+        low=decreasing_days['Low'],
+        close=decreasing_days['Close'],
+        decreasing_line_color='#1E90FF',
+        decreasing_fillcolor='#1E90FF',
+        hoverinfo='text',
+        text=[f'Date: {d.strftime("%Y/%m/%d")}<br>'
+              f'Open: {o:.1f}<br>'
+              f'High: {h:.1f}<br>'
+              f'Low: {l:.1f}<br>'
+              f'Close: {c:.1f} ({cc:+.2f}%)'
+              for d, o, h, l, c, cc in zip(
+                  decreasing_days['Date'], decreasing_days['Open'], decreasing_days['High'],
+                  decreasing_days['Low'], decreasing_days['Close'], decreasing_days['Close Change (%)']
+              )]
+    ))
+
+    # 차트 레이아웃 설정 및 rangeslider 및 날짜 형식 추가
+    fig.update_layout(
+        xaxis=dict(
+            title='Date',
+            tickformat='%Y/%m/%d',  # 날짜 형식을 YYYY/MM/DD로 설정
+            rangeslider=dict(visible=True, thickness=0.1)  # rangeslider 활성화 및 두께 설정
+        ),
+        yaxis=dict(
+            title='Stock Price',
+            autorange=True  # y축 범위를 자동으로 조정
+        ),
+        showlegend=False  # 범례 숨김
+    )
+
+    return fig, recent_30_days.to_dict('records')
+
+#################################################################################################
+
+# 콜백 설정: Top10 캔들차트와 테이블 업데이트
+@app.callback(
+    [Output('candle-chart', 'figure'),
+     Output('stock-recent-table', 'data')],
+    [Input('ticker-dropdown', 'value')]
+)
+def update_stock_chart_and_table(selected_ticker):
+    df = stock_data[stock_data['Ticker'] == selected_ticker].copy()
+
+    # 전날 대비 종가 변동률 계산
+    df['Previous Close'] = df['Close'].shift(1)
+    df['Close Change (%)'] = ((df['Close'] - df['Previous Close']) / df['Previous Close'] * 100).round(2)
+
+    # NaN 값을 0으로 처리하여 초기 데이터 표시 문제 해결
+    df.fillna(0, inplace=True)
+
+    # 최근 30영업일 데이터 추출 및 최신 날짜가 위로 오도록 정렬
+    recent_30_days = df.tail(30).sort_values(by='Date', ascending=False)
+    recent_30_days['Date'] = recent_30_days['Date'].dt.strftime('%Y-%m-%d')  # 날짜 형식 변경
+
+    # 사용하지 않는 컬럼 제거 및 소수점 2자리까지 반올림
+    recent_30_days = recent_30_days[['Date', 'High', 'Low', 'Close', 'Close Change (%)']]
+    recent_30_days['High'] = recent_30_days['High'].round(2)
+    recent_30_days['Low'] = recent_30_days['Low'].round(2)
+    recent_30_days['Close'] = recent_30_days['Close'].round(2)
+
+    # 상승일과 하락일 분리
+    increasing_days = df[df['Close'] >= df['Previous Close']]
+    decreasing_days = df[df['Close'] < df['Previous Close']]
+
+    fig = go.Figure()
+
+    # 상승일 캔들차트 추가 (빨간색)
+    fig.add_trace(go.Candlestick(
+        x=increasing_days['Date'],
+        open=increasing_days['Open'],
+        high=increasing_days['High'],
+        low=increasing_days['Low'],
+        close=increasing_days['Close'],
+        increasing_line_color='red',
+        increasing_fillcolor='red',
+        hoverinfo='text',
+        text=[f'Date: {d.strftime("%Y/%m/%d")}<br>'
+              f'Open: {o:.1f}<br>'
+              f'High: {h:.1f}<br>'
+              f'Low: {l:.1f}<br>'
+              f'Close: {c:.1f} ({cc:+.2f}%)'
+              for d, o, h, l, c, cc in zip(
+                  increasing_days['Date'], increasing_days['Open'], increasing_days['High'],
+                  increasing_days['Low'], increasing_days['Close'], increasing_days['Close Change (%)']
+              )]
+    ))
+
+    # 하락일 캔들차트 추가 (밝은 파란색)
+    fig.add_trace(go.Candlestick(
+        x=decreasing_days['Date'],
+        open=decreasing_days['Open'],
+        high=decreasing_days['High'],
+        low=decreasing_days['Low'],
+        close=decreasing_days['Close'],
+        decreasing_line_color='#1E90FF',
+        decreasing_fillcolor='#1E90FF',
+        hoverinfo='text',
+        text=[f'Date: {d.strftime("%Y/%m/%d")}<br>'
+              f'Open: {o:.1f}<br>'
+              f'High: {h:.1f}<br>'
+              f'Low: {l:.1f}<br>'
+              f'Close: {c:.1f} ({cc:+.2f}%)'
+              for d, o, h, l, c, cc in zip(
+                  decreasing_days['Date'], decreasing_days['Open'], decreasing_days['High'],
+                  decreasing_days['Low'], decreasing_days['Close'], decreasing_days['Close Change (%)']
+              )]
+    ))
+
+    # 차트 레이아웃 설정 및 rangeslider 및 날짜 형식 추가
+    fig.update_layout(
+        xaxis=dict(
+            title='Date',
+            tickformat='%Y/%m/%d',  # 날짜 형식을 YYYY/MM/DD로 설정
+            rangeslider=dict(visible=True, thickness=0.1)  # rangeslider 활성화 및 두께 설정
+        ),
+        yaxis=dict(
+            title='Stock Price',
+            autorange=True  # y축 범위를 자동으로 조정
+        ),
+        showlegend=False  # 범례 숨김
+    )
+
+    return fig, recent_30_days.to_dict('records')
+
+# 앱 실행
 if __name__ == '__main__':
-    # Dash 앱 실행
     app.run_server(debug=True)
