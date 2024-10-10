@@ -45,7 +45,7 @@ SELECT
 """
 
 # 데이터프레임 변환
-market_cap_data = client.query(sql1).to_dataframe()
+market_cap_data = client.query(sql1).to_dataframe().sort_values(by='Cap Rank', ascending=True)
 nasdaq_data = client.query(sql2).to_dataframe()
 stock_data = client.query(sql3).to_dataframe()
 
