@@ -84,10 +84,6 @@ app.layout = html.Div([
     # 중단 구역
     html.Div([
         html.Div([
-            html.H2("NASDAQ Chart", style={'margin-bottom': '10px'}),
-            dcc.Graph(id='nasdaq-candle-chart', style={'height': '600px'}),  # 차트 높이 증가
-        ], style={'width': '50%', 'display': 'inline-block', 'verticalAlign': 'top'}),
-        html.Div([
             html.H2("Top10 Chart", style={'margin-bottom': '10px'}),
             dcc.Dropdown(
                 id='ticker-dropdown',
@@ -96,8 +92,8 @@ app.layout = html.Div([
                 clearable=False
             ),
             dcc.Graph(id='candle-chart', style={'height': '600px'})  # 차트 높이 증가
-        ], style={'width': '50%', 'display': 'inline-block', 'verticalAlign': 'top'}),
-    ], style={'border': '3px solid #ddd', 'padding': '20px', 'margin-bottom': '10px'}),  # 중단 구획 나눔
+        ], style={'width': '100%', 'display': 'inline-block', 'verticalAlign': 'top'}),
+    ], style={'border': '3px solid #ddd', 'padding': '20px', 'margin-bottom': '0px'}),  # 중단 구획 나눔
     
     # 하단 구역
     html.Div([
@@ -107,16 +103,15 @@ app.layout = html.Div([
                 id='nasdaq-recent-table',
                 columns=[
                     {'name': 'Date', 'id': 'Date'},
-                    {'name': 'High', 'id': 'High'},
-                    {'name': 'Low', 'id': 'Low'},
                     {'name': 'Close', 'id': 'Close'},
-                    {'name': 'Close Change (%)', 'id': 'Close Change (%)'}
+                    {'name': 'Change(%)', 'id': 'Change(%)'},
+                    {'name': '전고점비율', 'id': 'High_Current_ratio'}
                 ],
                 style_table={'overflowX': 'auto'},
                 style_cell={'textAlign': 'center'},
                 page_size=30  # 최대 30개 행 표시
             )
-        ], style={'width': '45%', 'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '5%'}),
+        ], style={'width': '35%', 'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '3%'}),
         html.Div([
             html.H2("Top10 최근 30일 Status"),
             dash_table.DataTable(
@@ -126,35 +121,35 @@ app.layout = html.Div([
                     {'name': 'High', 'id': 'High'},
                     {'name': 'Low', 'id': 'Low'},
                     {'name': 'Close', 'id': 'Close'},
-                    {'name': 'Close Change (%)', 'id': 'Close Change (%)'}
+                    {'name': 'Change(%)', 'id': 'Change(%)'},
+                    {'name': '전고점비율', 'id': 'High_Current_ratio'}
                 ],
                 style_table={'overflowX': 'auto'},
                 style_cell={'textAlign': 'center'},
                 page_size=30  # 최대 30개 행 표시
             )
-        ], style={'width': '45%', 'display': 'inline-block', 'verticalAlign': 'top'}),
+        ], style={'width': '60%', 'display': 'inline-block', 'verticalAlign': 'top'}),
 
-    ], style={'border': '3px solid #ddd', 'padding': '10px'}),  # 하단 구획 나눔
+    ], style={'border': '3px solid #ddd', 'padding': '5px'}),  # 하단 구획 나눔
     dcc.Interval(
         id='interval-component',
         interval=3600*1000,  # 1시간 마다 호출 (필요에 따라 조정 가능)
         n_intervals=0  # 페이지 로드 시 한 번 실행
     )
 ])
-
-# 콜백 설정: 나스닥 캔들차트와 테이블 업데이트
+##################################################################################################
+# 콜백 설정: 나스닥 테이블 업데이트
 @app.callback(
-    [Output('nasdaq-candle-chart', 'figure'),
-     Output('nasdaq-recent-table', 'data')],
+    Output('nasdaq-recent-table', 'data'),
     [Input('interval-component', 'n_intervals')]
 )
 
-def update_nasdaq_chart_and_table(selected_ticker):
+def update_nasdaq_chart_and_table(n_intervals):
     df = nasdaq_data.copy()
 
     # 전날 대비 종가 변동률 계산
     df['Previous Close'] = df['Close'].shift(1)
-    df['Close Change (%)'] = ((df['Close'] - df['Previous Close']) / df['Previous Close'] * 100).round(2)
+    df['Change(%)'] = ((df['Close'] - df['Previous Close']) / df['Previous Close'] * 100).round(2)
 
     # NaN 값을 0으로 처리하여 초기 데이터 표시 문제 해결
     df.fillna(0, inplace=True)
@@ -164,74 +159,12 @@ def update_nasdaq_chart_and_table(selected_ticker):
     recent_30_days['Date'] = recent_30_days['Date'].dt.strftime('%Y-%m-%d')  # 날짜 형식 변경
 
     # 사용하지 않는 컬럼 제거 및 소수점 2자리까지 반올림
-    recent_30_days = recent_30_days[['Date', 'High', 'Low', 'Close', 'Close Change (%)']]
+    recent_30_days = recent_30_days[['Date', 'High', 'Low', 'Close', 'Change(%)','High_Current_ratio']]
     recent_30_days['High'] = recent_30_days['High'].round(2)
     recent_30_days['Low'] = recent_30_days['Low'].round(2)
     recent_30_days['Close'] = recent_30_days['Close'].round(2)
 
-    # 상승일과 하락일 분리
-    increasing_days = df[df['Close'] >= df['Previous Close']]
-    decreasing_days = df[df['Close'] < df['Previous Close']]
-
-    fig = go.Figure()
-
-    # 상승일 캔들차트 추가 (빨간색)
-    fig.add_trace(go.Candlestick(
-        x=increasing_days['Date'],
-        open=increasing_days['Open'],
-        high=increasing_days['High'],
-        low=increasing_days['Low'],
-        close=increasing_days['Close'],
-        increasing_line_color='red',
-        increasing_fillcolor='red',
-        hoverinfo='text',
-        text=[f'Date: {d.strftime("%Y/%m/%d")}<br>'
-              f'Open: {o:.1f}<br>'
-              f'High: {h:.1f}<br>'
-              f'Low: {l:.1f}<br>'
-              f'Close: {c:.1f} ({cc:+.2f}%)'
-              for d, o, h, l, c, cc in zip(
-                  increasing_days['Date'], increasing_days['Open'], increasing_days['High'],
-                  increasing_days['Low'], increasing_days['Close'], increasing_days['Close Change (%)']
-              )]
-    ))
-
-    # 하락일 캔들차트 추가 (밝은 파란색)
-    fig.add_trace(go.Candlestick(
-        x=decreasing_days['Date'],
-        open=decreasing_days['Open'],
-        high=decreasing_days['High'],
-        low=decreasing_days['Low'],
-        close=decreasing_days['Close'],
-        decreasing_line_color='#1E90FF',
-        decreasing_fillcolor='#1E90FF',
-        hoverinfo='text',
-        text=[f'Date: {d.strftime("%Y/%m/%d")}<br>'
-              f'Open: {o:.1f}<br>'
-              f'High: {h:.1f}<br>'
-              f'Low: {l:.1f}<br>'
-              f'Close: {c:.1f} ({cc:+.2f}%)'
-              for d, o, h, l, c, cc in zip(
-                  decreasing_days['Date'], decreasing_days['Open'], decreasing_days['High'],
-                  decreasing_days['Low'], decreasing_days['Close'], decreasing_days['Close Change (%)']
-              )]
-    ))
-
-    # 차트 레이아웃 설정 및 rangeslider 및 날짜 형식 추가
-    fig.update_layout(
-        xaxis=dict(
-            title='Date',
-            tickformat='%Y/%m/%d',  # 날짜 형식을 YYYY/MM/DD로 설정
-            rangeslider=dict(visible=True, thickness=0.1)  # rangeslider 활성화 및 두께 설정
-        ),
-        yaxis=dict(
-            title='Stock Price',
-            autorange=True  # y축 범위를 자동으로 조정
-        ),
-        showlegend=False  # 범례 숨김
-    )
-
-    return fig, recent_30_days.to_dict('records')
+    return recent_30_days.to_dict('records')
 
 #################################################################################################
 
@@ -246,7 +179,7 @@ def update_stock_chart_and_table(selected_ticker):
 
     # 전날 대비 종가 변동률 계산
     df['Previous Close'] = df['Close'].shift(1)
-    df['Close Change (%)'] = ((df['Close'] - df['Previous Close']) / df['Previous Close'] * 100).round(2)
+    df['Change(%)'] = ((df['Close'] - df['Previous Close']) / df['Previous Close'] * 100).round(2)
 
     # NaN 값을 0으로 처리하여 초기 데이터 표시 문제 해결
     df.fillna(0, inplace=True)
@@ -256,7 +189,7 @@ def update_stock_chart_and_table(selected_ticker):
     recent_30_days['Date'] = recent_30_days['Date'].dt.strftime('%Y-%m-%d')  # 날짜 형식 변경
 
     # 사용하지 않는 컬럼 제거 및 소수점 2자리까지 반올림
-    recent_30_days = recent_30_days[['Date', 'High', 'Low', 'Close', 'Close Change (%)']]
+    recent_30_days = recent_30_days[['Date', 'High', 'Low', 'Close', 'Change(%)','High_Current_ratio']]
     recent_30_days['High'] = recent_30_days['High'].round(2)
     recent_30_days['Low'] = recent_30_days['Low'].round(2)
     recent_30_days['Close'] = recent_30_days['Close'].round(2)
@@ -284,7 +217,7 @@ def update_stock_chart_and_table(selected_ticker):
               f'Close: {c:.1f} ({cc:+.2f}%)'
               for d, o, h, l, c, cc in zip(
                   increasing_days['Date'], increasing_days['Open'], increasing_days['High'],
-                  increasing_days['Low'], increasing_days['Close'], increasing_days['Close Change (%)']
+                  increasing_days['Low'], increasing_days['Close'], increasing_days['Change(%)']
               )]
     ))
 
@@ -305,7 +238,7 @@ def update_stock_chart_and_table(selected_ticker):
               f'Close: {c:.1f} ({cc:+.2f}%)'
               for d, o, h, l, c, cc in zip(
                   decreasing_days['Date'], decreasing_days['Open'], decreasing_days['High'],
-                  decreasing_days['Low'], decreasing_days['Close'], decreasing_days['Close Change (%)']
+                  decreasing_days['Low'], decreasing_days['Close'], decreasing_days['Change(%)']
               )]
     ))
 
