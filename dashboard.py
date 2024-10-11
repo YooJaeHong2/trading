@@ -114,7 +114,7 @@ app.layout = html.Div([
     # 하단 구역
     html.Div([
         html.Div([
-            html.H2("NASDAQ Status", style={'text-align': 'center'}),
+            html.H2("NASDAQ", style={'text-align': 'center'}),
             dash_table.DataTable(
                 id='nasdaq-recent-table',
                 columns=[
@@ -124,9 +124,10 @@ app.layout = html.Div([
                 ],
                 style_table={'overflowX': 'auto'},
                 style_cell={'textAlign': 'center'},
+                fixed_columns={'headers': True, 'data': 1},  # 첫 열을 고정
                 page_size=30  # 최대 30개 행 표시
             )
-        ], style={'width': '45%', 'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '2%'}),
+        ], style={'width': '48%', 'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '2%'}),
         html.Div([
             html.H2("Top10 Status", style={'text-align': 'center'}),
             dash_table.DataTable(
@@ -140,7 +141,7 @@ app.layout = html.Div([
                 style_cell={'textAlign': 'center'},
                 page_size=30  # 최대 30개 행 표시
             )
-        ], style={'width': '45%', 'display': 'inline-block', 'verticalAlign': 'top', 'margin-left': '2%'}),
+        ], style={'width': '50%', 'display': 'inline-block', 'verticalAlign': 'top'}),
 
     ], style={'border': '3px solid #ddd', 'padding': '10px'}),  # 하단 구획 나눔
     dcc.Interval(
