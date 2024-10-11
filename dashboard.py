@@ -94,7 +94,7 @@ app.layout = html.Div([
             dcc.Graph(
                 id='candle-chart', 
                 style={
-                    'height': '600px',
+                    'height': '400px',
                     'width': '100%',
                     'padding': '0',
                     'margin': '0'
