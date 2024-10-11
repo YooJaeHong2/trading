@@ -73,8 +73,8 @@ app.layout = html.Div([
         html.H2("시가총액 상위 10위 Daily Status"),
         dash_table.DataTable(
             id='market-cap-table',
-            columns=[{'name': col, 'id': col} for col in market_cap_data.columns[1:]],  # 두 번째 컬럼부터
-            data=market_cap_data.iloc[:, 1:].head(10).to_dict('records'),  # 두 번째 컬럼부터
+            columns=[{'name': col, 'id': col} for col in market_cap_data.columns[0:]],
+            data=market_cap_data.iloc[:, :].head(10).to_dict('records'),
             style_table={'overflowX': 'auto'},
             style_cell={'textAlign': 'center'},
             page_size=10  # 최대 10개 행 표시
@@ -84,21 +84,29 @@ app.layout = html.Div([
     # 중단 구역
     html.Div([
         html.Div([
-            html.H2("Top10 Chart", style={'margin-bottom': '10px'}),
+            html.H2("Top10 Chart"),
             dcc.Dropdown(
                 id='ticker-dropdown',
                 options=[{'label': ticker, 'value': ticker} for ticker in sorted_tickers],
                 value=sorted_tickers[0],  # 기본값으로 Cap Rank가 가장 높은 티커 선택
                 clearable=False
             ),
-            dcc.Graph(id='candle-chart', style={'height': '600px'})  # 차트 높이 증가
+            dcc.Graph(
+                id='candle-chart', 
+                style={
+                    'height': '600px',
+                    'width': '100%',
+                    'padding': '0',
+                    'margin': '0'
+                }
+            )
         ], style={'width': '100%', 'display': 'inline-block', 'verticalAlign': 'top'}),
-    ], style={'border': '3px solid #ddd', 'padding': '20px', 'margin-bottom': '0px'}),  # 중단 구획 나눔
+    ], style={'border': '3px solid #ddd', 'padding': '0px', 'margin': '0px'}),  # 중단 구획 나눔
     
     # 하단 구역
     html.Div([
         html.Div([
-            html.H2("NASDAQ 최근 30일 Status"),
+            html.H2("NASDAQ"),
             dash_table.DataTable(
                 id='nasdaq-recent-table',
                 columns=[
