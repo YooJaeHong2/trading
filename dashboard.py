@@ -77,19 +77,21 @@ app.layout = html.Div([
             data=market_cap_data.iloc[:, :].head(10).to_dict('records'),
             style_table={'overflowX': 'auto'},
             style_cell={'textAlign': 'center'},
+            fixed_columns={'headers': True, 'data': 1},  # 첫 열을 고정
             page_size=10  # 최대 10개 행 표시
         )
-    ], style={'border': '3px solid #ddd', 'padding': '20px', 'margin-bottom': '10px'}),  # 상단 구획 나눔
+    ], style={'border': '3px solid #ddd', 'padding': '10px'}),  # 상단 구획 나눔
 
     # 중단 구역
     html.Div([
         html.Div([
-            html.H2("Top10 Chart"),
+            html.H2("Top10 Chart", style={'margin-left': '10px'}),
             dcc.Dropdown(
                 id='ticker-dropdown',
                 options=[{'label': ticker, 'value': ticker} for ticker in sorted_tickers],
                 value=sorted_tickers[0],  # 기본값으로 Cap Rank가 가장 높은 티커 선택
-                clearable=False
+                clearable=False,
+                style={'width': '95%', 'margin': 'auto'}
             ),
             dcc.Graph(
                 id='candle-chart', 
@@ -98,15 +100,21 @@ app.layout = html.Div([
                     'width': '100%',
                     'padding': '0',
                     'margin': '0'
+                },
+                figure={
+                    'layout': {
+                        'plot_bgcolor': 'white',  # 그래프 영역 배경을 흰색으로 설정
+                        'paper_bgcolor': 'white'  # 전체 그래프 배경을 흰색으로 설정
+                    }
                 }
             )
         ], style={'width': '100%', 'display': 'inline-block', 'verticalAlign': 'top'}),
-    ], style={'border': '3px solid #ddd', 'padding': '0px', 'margin': '0px'}),  # 중단 구획 나눔
+    ], style={'border': '3px solid #ddd', 'padding': '0px'}),  # 중단 구획 나눔
     
     # 하단 구역
     html.Div([
         html.Div([
-            html.H2("NASDAQ"),
+            html.H2("NASDAQ Status", style={'text-align': 'center'}),
             dash_table.DataTable(
                 id='nasdaq-recent-table',
                 columns=[
@@ -118,13 +126,12 @@ app.layout = html.Div([
                 style_cell={'textAlign': 'center'},
                 page_size=30  # 최대 30개 행 표시
             )
-        ], style={'width': '35%', 'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '3%'}),
+        ], style={'width': '45%', 'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '2%'}),
         html.Div([
-            html.H2("Top10 Status"),
+            html.H2("Top10 Status", style={'text-align': 'center'}),
             dash_table.DataTable(
                 id='stock-recent-table',
                 columns=[
-                    {'name': 'Date', 'id': 'Date'},
                     {'name': 'Close', 'id': 'Close'},
                     {'name': 'Change(%)', 'id': 'Change(%)'},
                     {'name': '전고점비율', 'id': 'High_Current_ratio'}
@@ -133,9 +140,9 @@ app.layout = html.Div([
                 style_cell={'textAlign': 'center'},
                 page_size=30  # 최대 30개 행 표시
             )
-        ], style={'width': '60%', 'display': 'inline-block', 'verticalAlign': 'top'}),
+        ], style={'width': '45%', 'display': 'inline-block', 'verticalAlign': 'top', 'margin-left': '2%'}),
 
-    ], style={'border': '3px solid #ddd', 'padding': '5px'}),  # 하단 구획 나눔
+    ], style={'border': '3px solid #ddd', 'padding': '10px'}),  # 하단 구획 나눔
     dcc.Interval(
         id='interval-component',
         interval=3600*1000,  # 1시간 마다 호출 (필요에 따라 조정 가능)
