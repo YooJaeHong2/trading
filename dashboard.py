@@ -1,9 +1,8 @@
 from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
 from google.oauth2.service_account import Credentials
-from dash import dcc, html, Input, Output
+from dash import dcc, html, Input, Output, dash_table
 import dash
-import dash_table
 import plotly.graph_objects as go
 import pandas as pd
 import os
