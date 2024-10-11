@@ -119,7 +119,7 @@ app.layout = html.Div([
                 id='nasdaq-recent-table',
                 columns=[
                     {'name': 'Date', 'id': 'Date'},
-                    {'name': 'Change(%)', 'id': 'Change(%)'},
+                    {'name': '변동', 'id': 'Change(%)'},
                     {'name': '전고점비율', 'id': 'High_Current_ratio'}
                 ],
                 style_table={'overflowX': 'auto'},
@@ -134,7 +134,7 @@ app.layout = html.Div([
                 id='stock-recent-table',
                 columns=[
                     {'name': 'Close', 'id': 'Close'},
-                    {'name': 'Change(%)', 'id': 'Change(%)'},
+                    {'name': '변동', 'id': 'Change(%)'},
                     {'name': '전고점비율', 'id': 'High_Current_ratio'}
                 ],
                 style_table={'overflowX': 'auto'},
