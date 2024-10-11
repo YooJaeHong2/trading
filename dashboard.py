@@ -120,7 +120,7 @@ app.layout = html.Div([
                 columns=[
                     {'name': 'Date', 'id': 'Date'},
                     {'name': '변동', 'id': 'Change(%)'},
-                    {'name': '전고점비율', 'id': 'High_Current_ratio'}
+                    {'name': '전고점(%)', 'id': 'High_Current_ratio'}
                 ],
                 style_table={'overflowX': 'auto'},
                 style_cell={'textAlign': 'center'},
@@ -135,7 +135,7 @@ app.layout = html.Div([
                 columns=[
                     {'name': 'Close', 'id': 'Close'},
                     {'name': '변동', 'id': 'Change(%)'},
-                    {'name': '전고점비율', 'id': 'High_Current_ratio'}
+                    {'name': '전고점(%)', 'id': 'High_Current_ratio'}
                 ],
                 style_table={'overflowX': 'auto'},
                 style_cell={'textAlign': 'center'},
@@ -169,7 +169,7 @@ def update_nasdaq_chart_and_table(n_intervals):
 
     # 최근 30영업일 데이터 추출 및 최신 날짜가 위로 오도록 정렬
     recent_30_days = df.tail(30).sort_values(by='Date', ascending=False)
-    recent_30_days['Date'] = recent_30_days['Date'].dt.strftime('%Y-%m-%d')  # 날짜 형식 변경
+    recent_30_days['Date'] = recent_30_days['Date'].dt.strftime('%Y/%m/%d')  # 날짜 형식 변경
 
     # 사용하지 않는 컬럼 제거 및 소수점 2자리까지 반올림
     recent_30_days = recent_30_days[['Date', 'High', 'Low', 'Close', 'Change(%)','High_Current_ratio']]
@@ -199,7 +199,7 @@ def update_stock_chart_and_table(selected_ticker):
 
     # 최근 30영업일 데이터 추출 및 최신 날짜가 위로 오도록 정렬
     recent_30_days = df.tail(30).sort_values(by='Date', ascending=False)
-    recent_30_days['Date'] = recent_30_days['Date'].dt.strftime('%Y-%m-%d')  # 날짜 형식 변경
+    recent_30_days['Date'] = recent_30_days['Date'].dt.strftime('%Y/%m/%d')  # 날짜 형식 변경
 
     # 사용하지 않는 컬럼 제거 및 소수점 2자리까지 반올림
     recent_30_days = recent_30_days[['Date', 'High', 'Low', 'Close', 'Change(%)','High_Current_ratio']]
