@@ -111,7 +111,6 @@ app.layout = html.Div([
                 id='nasdaq-recent-table',
                 columns=[
                     {'name': 'Date', 'id': 'Date'},
-                    {'name': 'Close', 'id': 'Close'},
                     {'name': 'Change(%)', 'id': 'Change(%)'},
                     {'name': '전고점비율', 'id': 'High_Current_ratio'}
                 ],
@@ -121,13 +120,11 @@ app.layout = html.Div([
             )
         ], style={'width': '35%', 'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '3%'}),
         html.Div([
-            html.H2("Top10 최근 30일 Status"),
+            html.H2("Top10 Status"),
             dash_table.DataTable(
                 id='stock-recent-table',
                 columns=[
                     {'name': 'Date', 'id': 'Date'},
-                    {'name': 'High', 'id': 'High'},
-                    {'name': 'Low', 'id': 'Low'},
                     {'name': 'Close', 'id': 'Close'},
                     {'name': 'Change(%)', 'id': 'Change(%)'},
                     {'name': '전고점비율', 'id': 'High_Current_ratio'}
