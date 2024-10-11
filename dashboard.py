@@ -45,7 +45,7 @@ SELECT
 """
 
 # 데이터프레임 변환
-market_cap_data = client.query(sql1).to_dataframe().sort_values(by='Cap Rank', ascending=True)
+market_cap_data = client.query(sql1).to_dataframe().sort_values(by='Rank', ascending=True)
 nasdaq_data = client.query(sql2).to_dataframe()
 stock_data = client.query(sql3).to_dataframe()
 
@@ -58,7 +58,7 @@ nasdaq_data = nasdaq_data.sort_values(by='Date', ascending=True)
 stock_data = stock_data.sort_values(by='Date', ascending=True)
 
 # Ticker 리스트를 Cap Rank 기준으로 정렬
-sorted_tickers = market_cap_data.sort_values(by='Cap Rank')['Ticker'].unique()
+sorted_tickers = market_cap_data.sort_values(by='Rank')['Ticker'].unique()
 
 # Dash 애플리케이션 생성
 app = dash.Dash(__name__)
@@ -77,7 +77,6 @@ app.layout = html.Div([
             data=market_cap_data.iloc[:, :].head(10).to_dict('records'),
             style_table={'overflowX': 'auto'},
             style_cell={'textAlign': 'center'},
-            fixed_columns={'headers': True, 'data': 1},  # 첫 열을 고정
             page_size=10  # 최대 10개 행 표시
         )
     ], style={'border': '3px solid #ddd', 'padding': '10px'}),  # 상단 구획 나눔
@@ -127,7 +126,7 @@ app.layout = html.Div([
                 fixed_columns={'headers': True, 'data': 1},  # 첫 열을 고정
                 page_size=30  # 최대 30개 행 표시
             )
-        ], style={'width': '50%', 'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '2%'}),
+        ], style={'width': '52%', 'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '2%'}),
         html.Div([
             html.H2("Top10 Status", style={'text-align': 'center'}),
             dash_table.DataTable(
@@ -141,7 +140,7 @@ app.layout = html.Div([
                 style_cell={'textAlign': 'center'},
                 page_size=30  # 최대 30개 행 표시
             )
-        ], style={'width': '48%', 'display': 'inline-block', 'verticalAlign': 'top'}),
+        ], style={'width': '46%', 'display': 'inline-block', 'verticalAlign': 'top'}),
 
     ], style={'border': '3px solid #ddd', 'padding': '10px'}),  # 하단 구획 나눔
     dcc.Interval(
