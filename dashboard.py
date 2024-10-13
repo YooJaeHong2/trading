@@ -264,7 +264,8 @@ def update_stock_chart_and_table(selected_ticker):
             title='Stock Price',
             autorange=True  # y축 범위를 자동으로 조정
         ),
-        showlegend=False  # 범례 숨김
+        showlegend=False,  # 범례 숨김
+        hovermode='x unified'  # x축을 따라 툴팁이 표시되도록 설정
     )
 
     return fig, recent_30_days.to_dict('records')
