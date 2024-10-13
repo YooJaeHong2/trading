@@ -257,7 +257,7 @@ def update_stock_chart_and_table(selected_ticker):
     fig.update_layout(
         xaxis=dict(
             title='Date',
-            tickformat='%Y/%m/%d',  # 날짜 형식을 YYYY/MM/DD로 설정
+            tickformat='%Y/%m',  # 날짜 형식을 YYYY/MM로 설정
             rangeslider=dict(visible=True, thickness=0.1)  # rangeslider 활성화 및 두께 설정
         ),
         yaxis=dict(
