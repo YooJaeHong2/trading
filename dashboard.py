@@ -82,32 +82,30 @@ app.layout = html.Div([
 
     # 중단 구역
     html.Div([
-        html.Div([
-            html.H2("Top10 Chart", style={'margin-left': '10px'}),
-            dcc.Dropdown(
-                id='ticker-dropdown',
-                options=[{'label': ticker, 'value': ticker} for ticker in sorted_tickers],
-                value=sorted_tickers[0],  # 기본값으로 Cap Rank가 가장 높은 티커 선택
-                clearable=False,
-                style={'width': '95%', 'margin': 'auto'}
-            ),
-            dcc.Graph(
-                id='candle-chart', 
-                style={
-                    'height': '400px',
-                    'width': '100%',
-                    'padding': '0',
-                    'margin': '0'
-                },
-                figure={
-                    'layout': {
-                        'plot_bgcolor': 'white',  # 그래프 영역 배경을 흰색으로 설정
-                        'paper_bgcolor': 'white'  # 전체 그래프 배경을 흰색으로 설정
-                    }
+        html.H2("Top10 Chart", style={'margin-left': '10px'}),
+        dcc.Dropdown(
+            id='ticker-dropdown',
+            options=[{'label': ticker, 'value': ticker} for ticker in sorted_tickers],
+            value=sorted_tickers[0],  # 기본값으로 Cap Rank가 가장 높은 티커 선택
+            clearable=False,
+            style={'width': '95%', 'margin': 'auto'}
+        ),
+        dcc.Graph(
+            id='candle-chart', 
+            style={
+                'height': '400px',
+                'width': '100%',
+                'padding': '0',
+                'margin': '0'
+            },
+            figure={
+                'layout': {
+                    'plot_bgcolor': 'white',  # 그래프 영역 배경을 흰색으로 설정
+                    'paper_bgcolor': 'white'  # 전체 그래프 배경을 흰색으로 설정
                 }
-            )
-        ], style={'width': '100%', 'display': 'inline-block', 'verticalAlign': 'top'}),
-    ], style={'border': '3px solid #ddd', 'padding': '0px'}),  # 중단 구획 나눔
+            }
+        )
+    ], style={'border': '3px solid #ddd', 'padding': '0px'}),
     
     # 하단 구역
     html.Div([
